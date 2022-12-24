@@ -99,3 +99,9 @@ I have also included another script to visualize the dataset and the prediction.
 ```bash
 python3 plot.py --data data/blob.txt --clusters data/clusters.txt --fig data/plot.png
 ```
+
+You will need to install `scikit-learn`, `matplotlib`, and `numpy` to run the scripts:
+
+```bash
+pip3 install scikit-learn matplotlib numpy
+```
