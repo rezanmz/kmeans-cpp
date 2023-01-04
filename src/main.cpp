@@ -12,6 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "blob_generator.hpp"
 #include "kmeans.hpp"
 #include "utils.hpp"
 
@@ -34,6 +35,9 @@ int main(int argc, char *argv[]) {
     <model_output_file>
         - Prediction:
             ./kmeans <input_file> <model_file> <output_file>
+        - Generate blob dataset:
+            ./kmeans generate <file_address> <num_points> <num_dimensions>
+    <num_clusters> <radius>
     */
 
     // Check if the number of arguments is correct
@@ -41,8 +45,20 @@ int main(int argc, char *argv[]) {
         throw std::runtime_error("Invalid number of arguments");
     }
 
+    // Generate blob dataset
+    if (argc == 7 && std::string(argv[1]) == "generate") {
+        char *fileAddress = argv[2];
+        uint64_t numPoints = std::stoul(argv[3]);
+        uint64_t numDimensions = std::stoul(argv[4]);
+        uint64_t numClusters = std::stoul(argv[5]);
+        double_t radius = std::stod(argv[6]);
+
+        // Generate dataset
+        generateBlob(fileAddress, numPoints, numDimensions, numClusters,
+                     radius);
+    }
     // Train
-    if (argc == 6 || argc == 7) {
+    else if (argc == 6 || argc == 7) {
         // When the number of clusters is predefined
         if (argc == 6) {
             char *inputFile = argv[1];
