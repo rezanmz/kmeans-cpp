@@ -31,7 +31,7 @@ Below is an example of how the program finds the elbow:
 The program can be compiled using the following command:
 
 ```bash
-g++ main.cpp -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wpedantic -o kmeans
+g++ src/main.cpp -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wpedantic -std=c++20 -o kmeans
 ```
 
 # Usage
@@ -64,44 +64,115 @@ In prediction mode, user can load a model and use it to predict the cluster of a
 ./kmeans <input_file> <model_file> <output_file>
 ```
 
+The program also has a subcommand to generate a blob dataset. The program will generate a dataset and save it in a file:
+
+- Generate a blob dataset:
+
+```bash
+./kmeans generate [output_file] [num_points] [num_dimensions] [num_clusters] [radius]
+```
+
 # Example
 
-This repository contains a sample blob dataset that was generated using `scikit-learn`'s `make_blobs` function. The dataset contains 1000 samples with 2 features. The dataset is saved in `data/blob.txt`.
+## Dataset generation
 
-To train a model with 3 clusters on the dataset, run the following command:
-
-```bash
-./kmeans data/blob.txt 3 100 0.001 model.txt
-```
-
-The model will be saved in `model.txt`.
-
-After training, to predict the cluster of the blob dataset, run the following command:
+To generate a blob dataset with 1000 points in a 2-dimensional space, 3 clusters, and a radius of 0.5, run the following command:
 
 ```bash
-./kmeans data/blob.txt model.txt prediction.txt
+./kmeans generate data/blobs.txt 1000 2 3 0.5
 ```
 
-The prediction will be saved in `prediction.txt`.
-
-# Experiment with the blob dataset
-
-To further experiment with the blob dataset, you can use the `make_blob.py` included in this repository. This script will generate a blob dataset with the desired settings:
-
-For example:
+The first line of the file will be the number of points, the second line will be the number of dimensions, and the rest of the file will be the points. An example output is shown below:
 
 ```bash
-python3 make_blob.py --n_samples 1000 --n_features 2 --centers 3 --cluster_std 1.0 --random_state 42 --output data/blob.txt
+1000
+2
+0.759904 0.502418
+-0.11645 0.251438
+0.0676298 0.109861
+0.0718524 0.428411
+1.07953 0.212233
+.
+.
+.
+0.826449 0.217375
+0.246605 -0.0679699
+0.0836539 0.0667823
+0.327049 0.060512
 ```
 
-I have also included another script to visualize the dataset and the prediction. To visualize the dataset, run the following command:
+It will be saved to `data/blobs.txt`.
+
+## Training with a predefined number of clusters
+
+To train the model on a given dataset, the dataset should be stored in a file similar to the one above. To fit a model with 2 clusters with a maximum of 100 iterations and a threshold of 0.0001, run the following command:
 
 ```bash
-python3 plot.py --data data/blob.txt --clusters data/clusters.txt --fig data/plot.png
+./kmeans data/blobs.txt 2 100 0.0001 data/model.txt
 ```
 
-You will need to install `scikit-learn`, `matplotlib`, and `numpy` to run the scripts:
+The model will iteratively train until a threshold is reached or the maximum number of iterations is reached. The model will be saved to `data/model.txt`. An example output is shown below:
 
 ```bash
-pip3 install scikit-learn matplotlib numpy
+2
+2
+0.728192 0.467138
+0.121523 0.549123
 ```
+
+The first line is the number of clusters, the second line is the number of dimensions, and the rest of the file is the cluster centers.
+
+## Training with automatic number of clusters selection
+
+You can also let the program automatically select the number of clusters K using the elbow method. To fit a model with a minimum of 2 clusters and a maximum of 10 clusters with a maximum of 100 iterations and a threshold of 0.0001, run the following command:
+
+```bash
+./kmeans data/blobs.txt 2 10 100 0.0001 data/model.txt
+```
+
+The program will then automatically select the number of clusters K. The model will be saved to `data/model.txt`. An example output is shown below:
+
+```bash
+3
+2
+0.516175 0.857023
+0.961861 0.507088
+0.566069 0.113088
+```
+
+The first line is the number of clusters, the second line is the number of dimensions, and the rest of the file is the cluster centers.
+
+## Prediction
+
+To predict the cluster of a new observation, the observation should be stored in a file similar to the one above. To predict the cluster of a new observation, run the following command:
+
+```bash
+./kmeans data/blobs.txt data/model.txt data/predictions.txt
+```
+
+The program will first load the model from `data/model.txt` and then predict the cluster of each point in `data/blobs.txt`. The prediction will be saved to `data/predictions.txt`. An example output is shown below:
+
+```bash
+3
+2
+0
+.
+.
+.
+2
+4
+```
+
+Each line of the file is the cluster of the corresponding point in `data/blobs.txt`. E.g. the first line represents the cluster of the first point in `data/blobs.txt`, the second line represents the cluster of the second point in `data/blobs.txt`, and so on.
+
+# Visualization
+
+You can use `plot.py` to visualize the dataset and the clusters. This scripts receives the dataset (with the format described above) and the predictions (with the format described above) as input and will plot the data points in two dimensions with their corresponding cluster colors. If the data points are in a higher dimension, the program will first reduce the dimensionality of the data points using PCA. An example of the script is shown below:
+
+```bash
+python3 plot.py --data data/blobs.txt --cluster data/predictions.txt --fig data/plot.png
+```
+
+The output will be saved to `data/plot.png`. An example output is shown below:
+
+![image](/data/plot.png)
