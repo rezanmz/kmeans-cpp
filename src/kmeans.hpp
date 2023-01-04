@@ -20,9 +20,9 @@
  */
 class Point {
    public:
-    uint64_t numDims;     // number of dimensions
-    double *coordinates;  // pointer to the array of coordinates
-    uint64_t cluster;     // cluster number to which the point belongs
+    uint64_t numDims;                 // number of dimensions
+    std::vector<double> coordinates;  // pointer to the array of coordinates
+    uint64_t cluster;  // cluster number to which the point belongs
     /**
      * @brief Construct a new Point object
      *
@@ -35,7 +35,7 @@ class Point {
      */
     Point(uint64_t n) {
         this->numDims = n;
-        coordinates = new double[n];
+        this->coordinates.resize(n);
     }
 };
 
@@ -44,11 +44,11 @@ class Point {
  */
 class KMeans {
    public:
-    uint64_t numClusters;  // number of clusters
-    uint64_t numDims;      // number of dimensions
-    uint64_t numPoints;    // number of points in the dataset
-    Point *points;         // pointer to the array of points
-    Point *centroids;      // pointer to the array of centroids
+    uint64_t numClusters;          // number of clusters
+    uint64_t numDims;              // number of dimensions
+    uint64_t numPoints;            // number of points in the dataset
+    std::vector<Point> points;     // pointer to the array of points
+    std::vector<Point> centroids;  // pointer to the array of centroids
 
     /**
      * @brief Construct a new KMeans object
@@ -58,15 +58,16 @@ class KMeans {
      * @param numDataPoints number of points in the dataset
      * @param dataPoints pointer to the array of points
      */
-    KMeans(uint64_t k, uint64_t n, uint64_t numDataPoints, Point *dataPoints) {
+    KMeans(uint64_t k, uint64_t n, uint64_t numDataPoints,
+           std::vector<Point> dataPoints) {
         this->numClusters = k;
+        centroids.resize(k);
+        for (uint64_t i = 0; i < k; i++) {
+            centroids[i] = Point(n);
+        }
         this->numDims = n;
         this->numPoints = numDataPoints;
         this->points = dataPoints;
-        this->centroids = new Point[k];
-        for (uint64_t i = 0; i < k; i++) {
-            this->centroids[i] = Point(n);
-        }
     }
 
     /**
@@ -76,7 +77,8 @@ class KMeans {
      * @param dataPoints pointer to the array of points
      * @param filename path to the file containing the model
      */
-    KMeans(uint64_t numDataPoints, Point *dataPoints, char *filename) {
+    KMeans(uint64_t numDataPoints, std::vector<Point> dataPoints,
+           char *filename) {
         this->numPoints = numDataPoints;
         this->points = dataPoints;
 
@@ -91,10 +93,7 @@ class KMeans {
     void initializeCentroids() {
         // An array to keep track of the selected centroids so that we don't
         // select the same point twice as a centroid
-        bool *selected = new bool[numPoints];
-        for (uint64_t i = 0; i < numPoints; i++) {
-            selected[i] = false;
-        }
+        std::vector<bool> selected(numPoints, false);
         for (uint64_t i = 0; i < numClusters; i++) {
             uint64_t index = uint64_t(rand()) % numPoints;
             while (selected[index]) {
@@ -105,7 +104,6 @@ class KMeans {
                 centroids[i].coordinates[j] = points[index].coordinates[j];
             }
         }
-        delete[] selected;
     }
 
     /**
@@ -139,9 +137,8 @@ class KMeans {
      */
     void updateCentroids() {
         // Initialize the centroids to zero
-        uint64_t *numPointsInCluster = new uint64_t[numClusters];
+        std::vector<uint64_t> numPointsInCluster(numClusters, 0);
         for (uint64_t i = 0; i < numClusters; i++) {
-            numPointsInCluster[i] = 0;
             for (uint64_t j = 0; j < numDims; j++) {
                 centroids[i].coordinates[j] = 0;
             }
@@ -179,7 +176,7 @@ class KMeans {
             assignPointsToCentroids();
 
             // Store the old centroids
-            Point *oldCentroids = new Point[numClusters];
+            std::vector<Point> oldCentroids(numClusters);
             for (uint64_t i = 0; i < numClusters; i++) {
                 oldCentroids[i] = Point(numDims);
                 for (uint64_t j = 0; j < numDims; j++) {
@@ -275,9 +272,10 @@ class KMeans {
         file >> numClusters;  // First line is number of clusters
         file >> numDims;      // Second line is number of dimensions
         this->numClusters = numClusters;
+        centroids.resize(numClusters);
         this->numDims = numDims;
         // Next lines are the coordinates of the centroids
-        centroids = new Point[numClusters];
+        std::vector<Point> oldCentroids(numClusters);
         for (uint64_t i = 0; i < numClusters; i++) {
             centroids[i] = Point(numDims);
             for (uint64_t j = 0; j < numDims; j++) {
@@ -285,15 +283,5 @@ class KMeans {
             }
         }
         file.close();
-    }
-
-    /**
-     * @brief Destroy the KMeans object
-     *
-     */
-    ~KMeans() {
-        delete[] centroids;  // I only delete centroids here, because points is
-                             // a pointer to the array of points in the main
-                             // function and should not be deleted here
     }
 };

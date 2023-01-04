@@ -69,7 +69,8 @@ int main(int argc, char *argv[]) {
 
             // Read dataset
             uint64_t numPoints, numDimensions;
-            Point *points = readDataset(inputFile, numPoints, numDimensions);
+            std::vector<Point> points;
+            readDataset(points, inputFile, numPoints, numDimensions);
 
             // Train
             KMeans kmeans(numClusters, numDimensions, numPoints, points);
@@ -77,9 +78,6 @@ int main(int argc, char *argv[]) {
 
             // Save model
             kmeans.saveModel(modelOutputFile);
-
-            // Free memory
-            delete[] points;
         }
         // Find the number of clusters using the elbow method
         else {
@@ -92,7 +90,8 @@ int main(int argc, char *argv[]) {
 
             // Read dataset
             uint64_t numPoints, numDimensions;
-            Point *points = readDataset(inputFile, numPoints, numDimensions);
+            std::vector<Point> points;
+            readDataset(points, inputFile, numPoints, numDimensions);
 
             // Find the number of clusters
             uint64_t numClusters =
@@ -104,9 +103,6 @@ int main(int argc, char *argv[]) {
 
             // Save model
             kmeans.saveModel(modelOutputFile);
-
-            // Free memory
-            delete[] points;
         }
     }
     // Predict
@@ -117,7 +113,8 @@ int main(int argc, char *argv[]) {
 
         // Read dataset
         uint64_t numPoints, numDimensions;
-        Point *points = readDataset(inputFile, numPoints, numDimensions);
+        std::vector<Point> points;
+        readDataset(points, inputFile, numPoints, numDimensions);
 
         // Load model
         KMeans kmeans(numPoints, points, modelFile);

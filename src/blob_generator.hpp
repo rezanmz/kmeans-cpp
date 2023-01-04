@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <iostream>
+#include <vector>
+
 #include "kmeans.hpp"
 
 /**
@@ -40,7 +43,7 @@ void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
     file << numDimensions << std::endl;
 
     // Initialize the centroids
-    Point *centroids = new Point[numClusters];
+    std::vector<Point> centroids(numClusters);
     for (uint64_t i = 0; i < numClusters; i++) {
         centroids[i] = Point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {

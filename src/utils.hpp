@@ -22,13 +22,13 @@
 /**
  * @brief Read the dataset from a file
  *
+ * @param points
  * @param filename name of the file
  * @param numPoints number of points in the dataset
  * @param numDimensions number of dimensions
- * @return Point* pointer to the array of points
  */
-Point *readDataset(char *filename, uint64_t &numPoints,
-                   uint64_t &numDimensions) {
+void readDataset(std::vector<Point> &points, char *filename,
+                 uint64_t &numPoints, uint64_t &numDimensions) {
     std::FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         throw std::runtime_error("Could not open file");
@@ -36,12 +36,12 @@ Point *readDataset(char *filename, uint64_t &numPoints,
 
     // First line contains the number of points in the dataset
     fscanf(fp, "%lu", &numPoints);
+    points.resize(numPoints);
 
     // Second line contains the number of dimensions
     fscanf(fp, "%lu", &numDimensions);
 
     // From the third line, each line contains the coordinates of a point
-    Point *points = new Point[numPoints];
     for (uint64_t i = 0; i < numPoints; i++) {
         points[i] = Point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {
@@ -50,7 +50,6 @@ Point *readDataset(char *filename, uint64_t &numPoints,
     }
 
     fclose(fp);
-    return points;
 }
 
 /**
@@ -60,7 +59,8 @@ Point *readDataset(char *filename, uint64_t &numPoints,
  * @param numPoints number of points in the dataset
  * @param numDimensions number of dimensions
  */
-void printDataset(Point *points, uint64_t numPoints, uint64_t numDimensions) {
+void printDataset(std::vector<Point> &points, uint64_t numPoints,
+                  uint64_t numDimensions) {
     for (uint64_t i = 0; i < numPoints; i++) {
         for (uint64_t j = 0; j < numDimensions; j++) {
             std::cout << points[i].coordinates[j] << " ";
@@ -79,8 +79,8 @@ void printDataset(Point *points, uint64_t numPoints, uint64_t numDimensions) {
  * @param maxK maximum value of k
  * @return uint64_t optimal value of k
  */
-uint64_t elbowMethod(uint64_t numPoints, uint64_t numDimensions, Point *points,
-                     uint64_t minK, uint64_t maxK) {
+uint64_t elbowMethod(uint64_t numPoints, uint64_t numDimensions,
+                     std::vector<Point> points, uint64_t minK, uint64_t maxK) {
     // Check if minK is less than 1
     if (minK < 1) {
         throw std::runtime_error("Minimum value of k should be greater than 0");
