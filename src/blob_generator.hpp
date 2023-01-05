@@ -30,6 +30,7 @@
  */
 void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
                   uint64_t numClusters, double radius) {
+    // Initialize the random number generator
     time_t nTime;
     srand((unsigned)time(&nTime));
 
