@@ -16,13 +16,13 @@ Each trained model will be saved in a file, and the user will be able to load th
 
 This program will use the elbow method to automatically select the number of clusters K. Elbow method is a heuristic method of interpretation and validation of consistency within cluster analysis designed to help finding the appropriate number of clusters in a dataset. The method consists of plotting the explained variance as a function of the number of clusters, and picking the elbow of the curve as the number of clusters to use.
 
-Below is a an example of what an elbow plot looks like:
+Below is a an example of what an elbow plot looks like [[Source of the figure]](https://pythonprogramminglanguage.com/kmeans-elbow-method/):
 
 ![image](/inertia.png)
 
 To select the elbow, the program will find the line that connects the first and last point, and then find the point that is the farthest from the line.
 
-Below is an example of how the program finds the elbow:
+Below is an example of how the program finds the elbow [[Source of the figure]](https://www.researchgate.net/figure/Selection-of-the-optimal-k-for-the-k-means-algorithm-using-the-elbow-method-089-093_fig4_334611981):
 
 ![image](/optimal-k.png)
 
@@ -36,7 +36,19 @@ g++ src/main.cpp -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wpedanti
 
 # Usage
 
-The program can be used in two modes: training and prediction.
+The program can be used in three modes: generating sample blobs of data, training, and prediction
+
+## Generating sample blobs of data
+
+The program has a subcommand to generate a blob dataset. The program will generate a dataset and save it in a file:
+
+- Generate a blob dataset:
+
+```bash
+./kmeans generate [output_file] [num_points] [num_dimensions] [num_clusters] [radius]
+```
+
+## Training
 
 In training mode, user can either specify the number of clusters K or let the program automatically select the number of clusters K. The program will then train the model and save it in a file:
 
@@ -56,20 +68,14 @@ In training mode, user can either specify the number of clusters K or let the pr
 
 The program will then train the model and save it in a file. The first line of the file will be the number of clusters K, the second line will be the number of dimensions (features), and the rest of the file will be the cluster centers.
 
+## Prediction
+
 In prediction mode, user can load a model and use it to predict the cluster of a new observation (or on the same dataset that it was trained on). The program will then save the prediction in a file.
 
 - Prediction:
 
 ```bash
 ./kmeans <input_file> <model_file> <output_file>
-```
-
-The program also has a subcommand to generate a blob dataset. The program will generate a dataset and save it in a file:
-
-- Generate a blob dataset:
-
-```bash
-./kmeans generate [output_file] [num_points] [num_dimensions] [num_clusters] [radius]
 ```
 
 # Example
