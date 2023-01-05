@@ -34,18 +34,30 @@ void readDataset(std::vector<Point> &points, char *filename,
         throw std::runtime_error("Could not open file");
     }
 
+    // Check if the file follows the correct format:
     // First line contains the number of points in the dataset
-    fscanf(fp, "%lu", &numPoints);
+    // Second line contains the number of dimensions
+    // From the third line, each line contains the coordinates of a point
+
+    // Read the number of points in the dataset
+    if (fscanf(fp, "%lu", &numPoints) != 1) {
+        throw std::runtime_error("Could not read the number of points");
+    }
     points.resize(numPoints);
 
-    // Second line contains the number of dimensions
-    fscanf(fp, "%lu", &numDimensions);
+    // Read the number of dimensions
+    if (fscanf(fp, "%lu", &numDimensions) != 1) {
+        throw std::runtime_error("Could not read the number of dimensions");
+    }
 
-    // From the third line, each line contains the coordinates of a point
+    // Read the points
     for (uint64_t i = 0; i < numPoints; i++) {
         points[i] = Point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {
-            fscanf(fp, "%lf", &points[i].coordinates[j]);
+            if (fscanf(fp, "%lf", &points[i].coordinates[j]) != 1) {
+                throw std::runtime_error(
+                    "Could not read the coordinates of a point");
+            }
         }
     }
 

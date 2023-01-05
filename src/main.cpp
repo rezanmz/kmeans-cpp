@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
 
     // Check if the number of arguments is correct
     if (argc != 4 && argc != 6 && argc != 7) {
-        throw std::runtime_error("Invalid number of arguments");
+        std::cout << "Error: Invalid number of arguments";
+        return 1;
     }
 
     // Generate blob dataset
@@ -53,9 +54,15 @@ int main(int argc, char *argv[]) {
         uint64_t numClusters = std::stoul(argv[5]);
         double_t radius = std::stod(argv[6]);
 
-        // Generate dataset
-        generateBlob(fileAddress, numPoints, numDimensions, numClusters,
-                     radius);
+        try {
+            // Generate dataset
+            generateBlob(fileAddress, numPoints, numDimensions, numClusters,
+                         radius);
+        } catch (const std::exception &e) {
+            std::cout << "Error: " << e.what() << std::endl;
+            return 1;
+        }
+
     }
     // Train
     else if (argc == 6 || argc == 7) {
@@ -67,17 +74,23 @@ int main(int argc, char *argv[]) {
             double_t threshold = std::stod(argv[4]);
             char *modelOutputFile = argv[5];
 
-            // Read dataset
-            uint64_t numPoints, numDimensions;
-            std::vector<Point> points;
-            readDataset(points, inputFile, numPoints, numDimensions);
+            try {
+                // Read dataset
+                uint64_t numPoints, numDimensions;
+                std::vector<Point> points;
+                readDataset(points, inputFile, numPoints, numDimensions);
 
-            // Train
-            KMeans kmeans(numClusters, numDimensions, numPoints, points);
-            kmeans.fit(maxIters, threshold);
+                // Train
+                KMeans kmeans(numClusters, numDimensions, numPoints, points);
+                kmeans.fit(maxIters, threshold);
 
-            // Save model
-            kmeans.saveModel(modelOutputFile);
+                // Save model
+                kmeans.saveModel(modelOutputFile);
+            } catch (const std::exception &e) {
+                std::cout << "Error: " << e.what() << std::endl;
+                return 1;
+            }
+
         }
         // Find the number of clusters using the elbow method
         else {
@@ -88,21 +101,26 @@ int main(int argc, char *argv[]) {
             double_t threshold = std::stod(argv[5]);
             char *modelOutputFile = argv[6];
 
-            // Read dataset
-            uint64_t numPoints, numDimensions;
-            std::vector<Point> points;
-            readDataset(points, inputFile, numPoints, numDimensions);
+            try {
+                // Read dataset
+                uint64_t numPoints, numDimensions;
+                std::vector<Point> points;
+                readDataset(points, inputFile, numPoints, numDimensions);
 
-            // Find the number of clusters
-            uint64_t numClusters =
-                elbowMethod(numPoints, numDimensions, points, minK, maxK);
+                // Find the number of clusters
+                uint64_t numClusters =
+                    elbowMethod(numPoints, numDimensions, points, minK, maxK);
 
-            // Train
-            KMeans kmeans(numClusters, numDimensions, numPoints, points);
-            kmeans.fit(maxIters, threshold);
+                // Train
+                KMeans kmeans(numClusters, numDimensions, numPoints, points);
+                kmeans.fit(maxIters, threshold);
 
-            // Save model
-            kmeans.saveModel(modelOutputFile);
+                // Save model
+                kmeans.saveModel(modelOutputFile);
+            } catch (const std::exception &e) {
+                std::cout << "Error: " << e.what() << std::endl;
+                return 1;
+            }
         }
     }
     // Predict
@@ -111,16 +129,21 @@ int main(int argc, char *argv[]) {
         char *modelFile = argv[2];
         char *outputFile = argv[3];
 
-        // Read dataset
-        uint64_t numPoints, numDimensions;
-        std::vector<Point> points;
-        readDataset(points, inputFile, numPoints, numDimensions);
+        try {
+            // Read dataset
+            uint64_t numPoints, numDimensions;
+            std::vector<Point> points;
+            readDataset(points, inputFile, numPoints, numDimensions);
 
-        // Load model
-        KMeans kmeans(numPoints, points, modelFile);
+            // Load model
+            KMeans kmeans(numPoints, points, modelFile);
 
-        // Predict
-        kmeans.savePredictions(outputFile);
+            // Predict
+            kmeans.savePredictions(outputFile);
+        } catch (const std::exception &e) {
+            std::cout << "Error: " << e.what() << std::endl;
+            return 1;
+        }
     }
     return 0;
 }
