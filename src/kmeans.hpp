@@ -2,8 +2,8 @@
  * @file kmeans.hpp
  * @author Reza Namazi (namazir@mcmaster.ca)
  * @brief A header file for the K-means clustering algorithm
- * @version 1.0
- * @date 2022-12-23
+ * @version 2.0
+ * @date 2023-01-04
  *
  * @copyright Copyright (c) 2022
  *
@@ -31,7 +31,7 @@ class Point {
     /**
      * @brief Construct a new Point object
      *
-     * @param n number of dimensions
+     * @param n The number of dimensions (coordinates) that each point has
      */
     Point(uint64_t n) {
         this->numDims = n;
@@ -51,12 +51,12 @@ class KMeans {
     std::vector<Point> centroids;  // pointer to the array of centroids
 
     /**
-     * @brief Construct a new KMeans object
+     * @brief Construct a new KMeans object with a given number of clusters.
      *
-     * @param k number of clusters
-     * @param n number of dimensions
-     * @param numDataPoints number of points in the dataset
-     * @param dataPoints pointer to the array of points
+     * @param k The number of clusters that the model should find in the dataset
+     * @param n The number of dimensions (coordinates) that each point has
+     * @param numDataPoints The number of points in the dataset
+     * @param dataPoints A vector containing the points in the dataset
      */
     KMeans(uint64_t k, uint64_t n, uint64_t numDataPoints,
            std::vector<Point> dataPoints) {
@@ -71,11 +71,12 @@ class KMeans {
     }
 
     /**
-     * @brief Construct a new KMeans object
+     * @brief Construct a new KMeans object given a model file
      *
-     * @param numDataPoints number of points in the dataset
-     * @param dataPoints pointer to the array of points
-     * @param filename path to the file containing the model
+     * @param numDataPoints The number of points in the dataset
+     * @param dataPoints A vector containing the points in the dataset
+     * @param filename The name of the file containing the model (e.g. the
+     * coordinates of the centroids)
      */
     KMeans(uint64_t numDataPoints, std::vector<Point> dataPoints,
            char *filename) {
@@ -166,8 +167,9 @@ class KMeans {
      * @brief Run the k-means algorithm until a threshold is reached or maximum
      * number of iterations is reached
      *
-     * @param maxIterations maximum number of iterations
-     * @param threshold threshold
+     * @param maxIterations Maximum number of iterations to run the algorithm
+     * @param threshold The threshold to stop the algorithm - If the change in
+     * the centroids is less than this threshold, the algorithm stops
      */
     void fit(uint64_t maxIterations, double threshold) {
         initializeCentroids();
@@ -214,7 +216,7 @@ class KMeans {
     /**
      * @brief Save the predictions to a file
      *
-     * @param filename
+     * @param filename The name of the file to save the predictions to
      */
     void savePredictions(std::string filename) {
         assignPointsToCentroids();
@@ -228,7 +230,7 @@ class KMeans {
      * @brief Calculate the inertia of the model (sum of squared distances of
      * samples to their closest cluster center)
      *
-     * @return double
+     * @return The intertia of the model
      */
     double inertia() {
         double inertia = 0;
@@ -246,7 +248,7 @@ class KMeans {
     /**
      * @brief Save the model to a file
      *
-     * @param filename
+     * @param filename The name of the file to save the model to
      */
     void saveModel(std::string filename) {
         std::ofstream file(filename);
@@ -265,7 +267,7 @@ class KMeans {
     /**
      * @brief Load the model from a file
      *
-     * @param filename
+     * @param filename The name of the file to load the model from
      */
     void loadModel(std::string filename) {
         std::ifstream file(filename);

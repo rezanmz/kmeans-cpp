@@ -3,8 +3,8 @@
  * @author Reza Namazi (namazir@mcmaster.ca)
  * @brief A header file for utility functions used in the K-means clustering
  * program
- * @version 1.0
- * @date 2022-12-23
+ * @version 2.0
+ * @date 2023-01-04
  *
  * @copyright Copyright (c) 2022
  *
@@ -20,12 +20,12 @@
 #include "kmeans.hpp"
 
 /**
- * @brief Read the dataset from a file
+ * @brief Read the dataset from a file and stores it in a vector of points
  *
- * @param points
- * @param filename name of the file
- * @param numPoints number of points in the dataset
- * @param numDimensions number of dimensions
+ * @param points An empty vector of points to store the dataset
+ * @param filename Name of the file containing the dataset
+ * @param numPoints Number of points in the dataset
+ * @param numDimensions Number of dimensions (coordinates) that each point has
  */
 void readDataset(std::vector<Point> &points, char *filename,
                  uint64_t &numPoints, uint64_t &numDimensions) {
@@ -55,9 +55,9 @@ void readDataset(std::vector<Point> &points, char *filename,
 /**
  * @brief Print the dataset
  *
- * @param points pointer to the array of points
- * @param numPoints number of points in the dataset
- * @param numDimensions number of dimensions
+ * @param points A vector of points containing the dataset
+ * @param numPoints Number of points in the dataset
+ * @param numDimensions Number of dimensions (coordinates) that each point has
  */
 void printDataset(std::vector<Point> &points, uint64_t numPoints,
                   uint64_t numDimensions) {
@@ -72,12 +72,13 @@ void printDataset(std::vector<Point> &points, uint64_t numPoints,
 /**
  * @brief Find the optimal value of k using the elbow method
  *
- * @param numPoints number of points in the dataset
- * @param numDimensions number of dimensions
- * @param points pointer to the array of points
- * @param minK minimum value of k
- * @param maxK maximum value of k
- * @return uint64_t optimal value of k
+ * @param numPoints Number of points in the dataset
+ * @param numDimensions Number of dimensions (coordinates) that each point has
+ * @param points A vector of points containing the dataset
+ * @param minK Minimum value of k (clusters) to try
+ * @param maxK Maximum value of k (clusters) to try
+ * @return Optimal value of the number of clusters (k) found using the elbow
+ * method
  */
 uint64_t elbowMethod(uint64_t numPoints, uint64_t numDimensions,
                      std::vector<Point> points, uint64_t minK, uint64_t maxK) {

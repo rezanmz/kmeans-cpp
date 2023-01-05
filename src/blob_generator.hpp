@@ -18,13 +18,15 @@
 #include "kmeans.hpp"
 
 /**
- * @brief Generate a blob of points and save in a file - points are distributed
- * around k centroids
+ * @brief Generate a blob of points and save in a file
  *
- * @param fileName name of the file
- * @param numPoints number of points in the blob
- * @param numDimensions number of dimensions
- * @param numClusters number of clusters
+ * @param fileName Name of the file to save the points in
+ * @param numPoints Number of points to generate
+ * @param numDimensions Number of dimensions of each points in the dataset
+ * @param numClusters Number of desired clusters in the dataset
+ * @param radius Radius of the blob - the points will be generated around the
+ * centroids. The radius is the distance between the centroid and the points in
+ * the blob. The smaller the radius, the more dense the blob will be.
  */
 void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
                   uint64_t numClusters, double radius) {

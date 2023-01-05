@@ -3,7 +3,7 @@
  * @author Reza Namazi (namazir@mcmaster.ca)
  * @brief A program to run the K-means clustering algorithm
  * @version 1.0
- * @date 2022-12-23
+ * @date 2023-01-04
  *
  * @copyright Copyright (c) 2022
  *
