@@ -13,6 +13,7 @@
 #pragma once
 
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -29,9 +30,10 @@
  */
 void readDataset(std::vector<Point> &points, char *filename,
                  uint64_t &numPoints, uint64_t &numDimensions) {
-    std::FILE *fp = fopen(filename, "r");
-    if (fp == NULL) {
-        throw std::runtime_error("Could not open file");
+    // Open the file
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open the file");
     }
 
     // Check if the file follows the correct format:
@@ -40,13 +42,13 @@ void readDataset(std::vector<Point> &points, char *filename,
     // From the third line, each line contains the coordinates of a point
 
     // Read the number of points in the dataset
-    if (fscanf(fp, "%lu", &numPoints) != 1) {
+    if (!(file >> numPoints)) {
         throw std::runtime_error("Could not read the number of points");
     }
     points.resize(numPoints);
 
     // Read the number of dimensions
-    if (fscanf(fp, "%lu", &numDimensions) != 1) {
+    if (!(file >> numDimensions)) {
         throw std::runtime_error("Could not read the number of dimensions");
     }
 
@@ -54,14 +56,14 @@ void readDataset(std::vector<Point> &points, char *filename,
     for (uint64_t i = 0; i < numPoints; i++) {
         points[i] = Point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {
-            if (fscanf(fp, "%lf", &points[i].coordinates[j]) != 1) {
-                throw std::runtime_error(
-                    "Could not read the coordinates of a point");
+            if (!(file >> points[i].coordinates[j])) {
+                throw std::runtime_error("Could not read the coordinates");
             }
         }
     }
 
-    fclose(fp);
+    // Close the file
+    file.close();
 }
 
 /**
