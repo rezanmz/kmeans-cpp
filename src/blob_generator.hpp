@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iostream>
+#include <random>
 #include <vector>
 
 #include "kmeans.hpp"
@@ -31,8 +32,8 @@
 void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
                   uint64_t numClusters, double radius) {
     // Initialize the random number generator
-    time_t nTime;
-    srand((unsigned)time(&nTime));
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
     std::ofstream file(fileName);
     if (!file.is_open()) {
@@ -50,7 +51,8 @@ void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
     for (uint64_t i = 0; i < numClusters; i++) {
         centroids[i] = Point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {
-            centroids[i].coordinates[j] = (double)rand() / RAND_MAX;
+            // Generate a random number between 0 and 1
+            centroids[i].coordinates[j] = (double)gen() / gen.max();
         }
     }
 
@@ -62,8 +64,13 @@ void generateBlob(char *fileName, uint64_t numPoints, uint64_t numDimensions,
         // Generate a random point around the centroid
         Point point(numDimensions);
         for (uint64_t j = 0; j < numDimensions; j++) {
-            point.coordinates[j] = centroids[centroidIndex].coordinates[j] +
-                                   ((double)rand() / RAND_MAX - 0.5) * radius;
+            // Generate a random number between -1 and 1
+            double random = (double)gen() / gen.max() * 2 - 1;
+
+            // Multiply the random number by the radius and add it to the
+            // centroid
+            point.coordinates[j] =
+                centroids[centroidIndex].coordinates[j] + random * radius;
         }
 
         // Write the point to the file
